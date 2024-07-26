@@ -1,0 +1,319 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    color: #fff;
+  }
+
+  .game-container {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .cell {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid #fff;
+    font-size: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+  }
+
+  .cell:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+
+  #status {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+
+  #restart {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+
+  #restart:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+
+  #result-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    color: #333;
+  }
+
+  #result-message {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  #close-modal {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+
+  #close-modal:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic Tac Toe Pro</h1>
+    <div id="status">C'est à votre tour (X)</div>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+    <button id="restart">Recommencer</button>
+  </div>
+
+  <div id="result-modal">
+    <div class="modal-content">
+      <h2 id="result-message"></h2>
+      <button id="close-modal">Fermer</button>
+    </div>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    const cells = document.querySelectorAll('.cell');
+    const status = document.getElementById('status');
+    const restartBtn = document.getElementById('restart');
+    const resultModal = document.getElementById('result-modal');
+    const resultMessage = document.getElementById('result-message');
+    const closeModal = document.getElementById('close-modal');
+    let currentPlayer = 'X';
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+
+    const winningCombos = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+      [0, 4, 8], [2, 4, 6] // Diagonals
+    ];
+
+    function handleCellClick(e) {
+      const cellIndex = e.target.getAttribute('data-index');
+      if (gameBoard[cellIndex] !== '' || !gameActive) return;
+
+      updateCell(e.target, cellIndex);
+      checkResult();
+
+      if (gameActive) {
+        currentPlayer = 'O';
+        status.textContent = "L'ordinateur réfléchit...";
+        setTimeout(computerMove, 500);
+      }
+    }
+
+    function updateCell(cell, index) {
+      gameBoard[index] = currentPlayer;
+      cell.textContent = currentPlayer;
+      gsap.from(cell, {duration: 0.5, scale: 0, ease: "back.out(1.7)"});
+    }
+
+    function checkResult() {
+      let roundWon = false;
+      let winningCombo;
+
+      for (let i = 0; i < winningCombos.length; i++) {
+        const [a, b, c] = winningCombos[i];
+        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+          roundWon = true;
+          winningCombo = winningCombos[i];
+          break;
+        }
+      }
+
+      if (roundWon) {
+        highlightWinningCells(winningCombo);
+        showResult(`${currentPlayer} a gagné!`);
+        gameActive = false;
+        return;
+      }
+
+      if (!gameBoard.includes('')) {
+        showResult('Match nul!');
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      status.textContent = `C'est au tour de ${currentPlayer}`;
+    }
+
+    function highlightWinningCells(combo) {
+      combo.forEach(index => {
+        gsap.to(cells[index], {duration: 0.5, backgroundColor: "#4CAF50", color: "#fff", yoyo: true, repeat: -1});
+      });
+    }
+
+    function showResult(message) {
+      resultMessage.textContent = message;
+      gsap.to(resultModal, {duration: 0.5, opacity: 1, scale: 1, ease: "back.out(1.7)", display: "flex"});
+    }
+
+    function computerMove() {
+      const bestMove = minimax(gameBoard, 'O').index;
+      const cell = cells[bestMove];
+      updateCell(cell, bestMove);
+      checkResult();
+      currentPlayer = 'X';
+    }
+
+    function minimax(board, player) {
+      const availableSpots = emptyIndexes(board);
+
+      if (winning(board, 'X')) {
+        return { score: -10 };
+      } else if (winning(board, 'O')) {
+        return { score: 10 };
+      } else if (availableSpots.length === 0) {
+        return { score: 0 };
+      }
+
+      const moves = [];
+
+      for (let i = 0; i < availableSpots.length; i++) {
+        const move = {};
+        move.index = availableSpots[i];
+        board[availableSpots[i]] = player;
+
+        if (player === 'O') {
+          const result = minimax(board, 'X');
+          move.score = result.score;
+        } else {
+          const result = minimax(board, 'O');
+          move.score = result.score;
+        }
+
+        board[availableSpots[i]] = '';
+        moves.push(move);
+      }
+
+      let bestMove;
+      if (player === 'O') {
+        let bestScore = -Infinity;
+        for (let i = 0; i < moves.length; i++) {
+          if (moves[i].score > bestScore) {
+            bestScore = moves[i].score;
+            bestMove = i;
+          }
+        }
+      } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < moves.length; i++) {
+          if (moves[i].score < bestScore) {
+            bestScore = moves[i].score;
+            bestMove = i;
+          }
+        }
+      }
+
+      return moves[bestMove];
+    }
+
+    function emptyIndexes(board) {
+      return board.map((cell, index) => cell === '' ? index : null).filter(val => val !== null);
+    }
+
+    function winning(board, player) {
+      return winningCombos.some(combo => combo.every(index => board[index] === player));
+    }
+
+    function restartGame() {
+      currentPlayer = 'X';
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      gameActive = true;
+      status.textContent = "C'est à votre tour (X)";
+      cells.forEach(cell => {
+        cell.textContent = '';
+        gsap.to(cell, {duration: 0.3, backgroundColor: "rgba(255, 255, 255, 0.1)", color: "#fff", scale: 1});
+      });
+      gsap.to(resultModal, {duration: 0.3, opacity: 0, scale: 0.8, display: "none"});
+    }
+
+    board.addEventListener('click', handleCellClick);
+    restartBtn.addEventListener('click', restartGame);
+    closeModal.addEventListener('click', () => {
+      gsap.to(resultModal, {duration: 0.3, opacity: 0, scale: 0.8, display: "none"});
+    });
+
+    // Initial animations
+    gsap.from(".game-container", {duration: 1, y: -50, opacity: 0, ease: "power3.out"});
+    gsap.from(".cell", {duration: 0.5, scale: 0, stagger: 0.1, ease: "back.out(1.7)"});
+  </script>
+</body></html>
