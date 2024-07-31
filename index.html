@@ -1,319 +1,403 @@
-<html><head>
+<html><head><base href="https://vibesync.com/">
+<title>VibeSync - Share Your Moments</title>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe Pro</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ff4757">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+:root {
+    --primary-color: #ff4757;
+    --secondary-color: #5352ed;
+    --background-color: #f1f2f6;
+    --card-background: #ffffff;
+    --text-primary: #2f3542;
+    --text-secondary: #747d8c;
+    --border-color: #dfe4ea;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-color: #ffa502;
+}
 
-  body {
-    font-family: 'Roboto', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+* {
+    box-sizing: border-box;
     margin: 0;
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-    color: #fff;
-  }
+    padding: 0;
+}
 
-  .game-container {
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  }
+body, html {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-  h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
+.app-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding-bottom: 60px;
+}
 
-  .board {
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-gap: 10px;
-    margin-bottom: 2rem;
-  }
+.header {
+    background-color: var(--card-background);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
 
-  .cell {
-    width: 100px;
-    height: 100px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid #fff;
-    font-size: 48px;
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.search-container {
+    flex-grow: 1;
+    max-width: 300px;
+    margin: 0 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--background-color);
+    font-size: 14px;
+}
+
+.icon-container {
+    display: flex;
+    gap: 20px;
+}
+
+.icon {
+    color: var(--text-primary);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.story-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+.story {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 10px;
-  }
-
-  .cell:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-  }
-
-  #status {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    font-weight: bold;
-  }
-
-  #restart {
-    font-size: 1.2rem;
-    padding: 10px 20px;
-    background-color: #4CAF50;
     color: white;
-    border: none;
+    font-size: 24px;
+    flex-shrink: 0;
     cursor: pointer;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
+    position: relative;
+    overflow: hidden;
+}
 
-  #restart:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-  }
-
-  #result-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
+.story img {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: none;
+    object-fit: cover;
+}
+
+.story::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+}
+
+.post {
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.post-username {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.post-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.post-content {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.post-action {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.post-likes {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 10px;
+}
+
+.post-caption {
+    padding: 0 10px 10px;
+    font-size: 14px;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-background);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 60px;
+    box-shadow: 0 -2px 4px var(--shadow-color);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+}
+
+.create-button {
+    background-color: var(--primary-color);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-  }
+    font-size: 24px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    position: relative;
+    top: -20px;
+}
 
-  .modal-content {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 15px;
-    text-align: center;
-    color: #333;
-  }
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 
-  #result-message {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
+.create-button:hover {
+    animation: pulse 0.5s infinite;
+}
 
-  #close-modal {
-    font-size: 1.2rem;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
-
-  #close-modal:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-  }
+@media (max-width: 768px) {
+    .search-container {
+        display: none;
+    }
+}
 </style>
 </head>
 <body>
-  <div class="game-container">
-    <h1>Tic Tac Toe Pro</h1>
-    <div id="status">C'est à votre tour (X)</div>
-    <div class="board" id="board">
-      <div class="cell" data-index="0"></div>
-      <div class="cell" data-index="1"></div>
-      <div class="cell" data-index="2"></div>
-      <div class="cell" data-index="3"></div>
-      <div class="cell" data-index="4"></div>
-      <div class="cell" data-index="5"></div>
-      <div class="cell" data-index="6"></div>
-      <div class="cell" data-index="7"></div>
-      <div class="cell" data-index="8"></div>
+    <div class="app-container">
+        <header class="header">
+            <a href="/" class="logo">VibeSync</a>
+            <div class="search-container">
+                <input type="text" placeholder="Search" class="search-input">
+            </div>
+            <div class="icon-container">
+                <i class="fas fa-paper-plane icon" title="Messages"></i>
+                <i class="fas fa-bell icon" title="Notifications"></i>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="story-container">
+                <div class="story">+</div>
+                <div class="story"><img src="https://picsum.photos/seed/user1/70" alt="User 1 story" width="70" height="70"></div>
+                <div class="story"><img src="https://picsum.photos/seed/user2/70" alt="User 2 story" width="70" height="70"></div>
+                <div class="story"><img src="https://picsum.photos/seed/user3/70" alt="User 3 story" width="70" height="70"></div>
+                <div class="story"><img src="https://picsum.photos/seed/user4/70" alt="User 4 story" width="70" height="70"></div>
+                <div class="story"><img src="https://picsum.photos/seed/user5/70" alt="User 5 story" width="70" height="70"></div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://picsum.photos/seed/avatar1/40" alt="User avatar" class="post-avatar" width="40" height="40">
+                    <div>
+                        <div class="post-username">johndoe</div>
+                        <div class="post-time">2 hours ago</div>
+                    </div>
+                </div>
+                <video class="post-content" controls>
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="post-actions">
+                    <div class="post-action"><i class="far fa-heart"></i> Like</div>
+                    <div class="post-action"><i class="far fa-comment"></i> Comment</div>
+                    <div class="post-action"><i class="far fa-share-square"></i> Share</div>
+                </div>
+                <div class="post-likes">1,234 likes</div>
+                <div class="post-caption">Enjoying a beautiful day at the beach! #summervibes #beachday</div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://picsum.photos/seed/avatar2/40" alt="User avatar" class="post-avatar" width="40" height="40">
+                    <div>
+                        <div class="post-username">jane_smith</div>
+                        <div class="post-time">5 hours ago</div>
+                    </div>
+                </div>
+                <img src="https://picsum.photos/seed/post1/500/500" alt="Post image" class="post-content" width="500" height="500">
+                <div class="post-actions">
+                    <div class="post-action"><i class="far fa-heart"></i> Like</div>
+                    <div class="post-action"><i class="far fa-comment"></i> Comment</div>
+                    <div class="post-action"><i class="far fa-share-square"></i> Share</div>
+                </div>
+                <div class="post-likes">2,567 likes</div>
+                <div class="post-caption">Just tried this amazing new recipe! Who wants the details? 😋🍽️ #foodie #homecooking</div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="/" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="/explore" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Explore</span>
+            </a>
+            <a href="/create" class="create-button">
+                <i class="fas fa-plus"></i>
+            </a>
+            <a href="/activity" class="nav-item">
+                <i class="fas fa-heart"></i>
+                <span>Activity</span>
+            </a>
+            <a href="/profile" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
     </div>
-    <button id="restart">Recommencer</button>
-  </div>
 
-  <div id="result-modal">
-    <div class="modal-content">
-      <h2 id="result-message"></h2>
-      <button id="close-modal">Fermer</button>
-    </div>
-  </div>
+    <script>
+        // Like functionality
+        const likeButtons = document.querySelectorAll('.post-action:first-child');
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    icon.style.color = '#ff4757';
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    icon.style.color = '';
+                }
+            });
+        });
 
-  <script>
-    const board = document.getElementById('board');
-    const cells = document.querySelectorAll('.cell');
-    const status = document.getElementById('status');
-    const restartBtn = document.getElementById('restart');
-    const resultModal = document.getElementById('result-modal');
-    const resultMessage = document.getElementById('result-message');
-    const closeModal = document.getElementById('close-modal');
-    let currentPlayer = 'X';
-    let gameBoard = ['', '', '', '', '', '', '', '', ''];
-    let gameActive = true;
+        // Story click simulation
+        const stories = document.querySelectorAll('.story');
+        stories.forEach(story => {
+            story.addEventListener('click', function() {
+                alert('Opening story...');
+            });
+        });
 
-    const winningCombos = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-      [0, 4, 8], [2, 4, 6] // Diagonals
-    ];
+        // Create post button
+        const createButton = document.querySelector('.create-button');
+        createButton.addEventListener('click', function() {
+            alert('Opening camera to create a new post...');
+        });
 
-    function handleCellClick(e) {
-      const cellIndex = e.target.getAttribute('data-index');
-      if (gameBoard[cellIndex] !== '' || !gameActive) return;
-
-      updateCell(e.target, cellIndex);
-      checkResult();
-
-      if (gameActive) {
-        currentPlayer = 'O';
-        status.textContent = "L'ordinateur réfléchit...";
-        setTimeout(computerMove, 500);
-      }
-    }
-
-    function updateCell(cell, index) {
-      gameBoard[index] = currentPlayer;
-      cell.textContent = currentPlayer;
-      gsap.from(cell, {duration: 0.5, scale: 0, ease: "back.out(1.7)"});
-    }
-
-    function checkResult() {
-      let roundWon = false;
-      let winningCombo;
-
-      for (let i = 0; i < winningCombos.length; i++) {
-        const [a, b, c] = winningCombos[i];
-        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-          roundWon = true;
-          winningCombo = winningCombos[i];
-          break;
-        }
-      }
-
-      if (roundWon) {
-        highlightWinningCells(winningCombo);
-        showResult(`${currentPlayer} a gagné!`);
-        gameActive = false;
-        return;
-      }
-
-      if (!gameBoard.includes('')) {
-        showResult('Match nul!');
-        gameActive = false;
-        return;
-      }
-
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      status.textContent = `C'est au tour de ${currentPlayer}`;
-    }
-
-    function highlightWinningCells(combo) {
-      combo.forEach(index => {
-        gsap.to(cells[index], {duration: 0.5, backgroundColor: "#4CAF50", color: "#fff", yoyo: true, repeat: -1});
-      });
-    }
-
-    function showResult(message) {
-      resultMessage.textContent = message;
-      gsap.to(resultModal, {duration: 0.5, opacity: 1, scale: 1, ease: "back.out(1.7)", display: "flex"});
-    }
-
-    function computerMove() {
-      const bestMove = minimax(gameBoard, 'O').index;
-      const cell = cells[bestMove];
-      updateCell(cell, bestMove);
-      checkResult();
-      currentPlayer = 'X';
-    }
-
-    function minimax(board, player) {
-      const availableSpots = emptyIndexes(board);
-
-      if (winning(board, 'X')) {
-        return { score: -10 };
-      } else if (winning(board, 'O')) {
-        return { score: 10 };
-      } else if (availableSpots.length === 0) {
-        return { score: 0 };
-      }
-
-      const moves = [];
-
-      for (let i = 0; i < availableSpots.length; i++) {
-        const move = {};
-        move.index = availableSpots[i];
-        board[availableSpots[i]] = player;
-
-        if (player === 'O') {
-          const result = minimax(board, 'X');
-          move.score = result.score;
-        } else {
-          const result = minimax(board, 'O');
-          move.score = result.score;
-        }
-
-        board[availableSpots[i]] = '';
-        moves.push(move);
-      }
-
-      let bestMove;
-      if (player === 'O') {
-        let bestScore = -Infinity;
-        for (let i = 0; i < moves.length; i++) {
-          if (moves[i].score > bestScore) {
-            bestScore = moves[i].score;
-            bestMove = i;
-          }
-        }
-      } else {
-        let bestScore = Infinity;
-        for (let i = 0; i < moves.length; i++) {
-          if (moves[i].score < bestScore) {
-            bestScore = moves[i].score;
-            bestMove = i;
-          }
-        }
-      }
-
-      return moves[bestMove];
-    }
-
-    function emptyIndexes(board) {
-      return board.map((cell, index) => cell === '' ? index : null).filter(val => val !== null);
-    }
-
-    function winning(board, player) {
-      return winningCombos.some(combo => combo.every(index => board[index] === player));
-    }
-
-    function restartGame() {
-      currentPlayer = 'X';
-      gameBoard = ['', '', '', '', '', '', '', '', ''];
-      gameActive = true;
-      status.textContent = "C'est à votre tour (X)";
-      cells.forEach(cell => {
-        cell.textContent = '';
-        gsap.to(cell, {duration: 0.3, backgroundColor: "rgba(255, 255, 255, 0.1)", color: "#fff", scale: 1});
-      });
-      gsap.to(resultModal, {duration: 0.3, opacity: 0, scale: 0.8, display: "none"});
-    }
-
-    board.addEventListener('click', handleCellClick);
-    restartBtn.addEventListener('click', restartGame);
-    closeModal.addEventListener('click', () => {
-      gsap.to(resultModal, {duration: 0.3, opacity: 0, scale: 0.8, display: "none"});
-    });
-
-    // Initial animations
-    gsap.from(".game-container", {duration: 1, y: -50, opacity: 0, ease: "power3.out"});
-    gsap.from(".cell", {duration: 0.5, scale: 0, stagger: 0.1, ease: "back.out(1.7)"});
-  </script>
-</body></html>
+        // Infinite scroll simulation
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                setTimeout(() => {
+                    const newPost = document.querySelector('.post').cloneNode(true);
+                    const randomUser = Math.floor(Math.random() * 1000);
+                    newPost.querySelector('.post-username').textContent = `user${randomUser}`;
+                    newPost.querySelector('.post-avatar').src = `https://picsum.photos/seed/avatar${randomUser}/40`;
+                    newPost.querySelector('.post-content').src = `https://picsum.photos/seed/post${randomUser}/500/500`;
+                    newPost.querySelector('.post-caption').textContent = `Random caption for post #${randomUser}`;
+                    ;
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
